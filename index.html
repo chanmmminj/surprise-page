@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>兄弟，這是你的驚喜！</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: black;
+            color: white;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #f9a825;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            z-index: 10;
+            position: absolute;
+        }
+
+        button:hover {
+            background-color: #d68910;
+        }
+
+        #photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none; /* 開始隱藏 */
+            z-index: 0;
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .marquee {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: scroll 10s linear infinite;
+            font-size: 48px; /* 調大字體大小 */
+            font-weight: bold; /* 加粗文字 */
+            color: yellow;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button onclick="showSurprise()">點擊</button>
+        <!-- 動圖 -->
+        <img id="photo" src="0119.gif" alt="驚喜動圖">
+        <!-- 彩帶 -->
+        <canvas class="confetti" id="confettiCanvas"></canvas>
+    </div>
+
+    <!-- 跑馬燈文字 -->
+    <div class="marquee">
+        <span>恭喜我的兄弟獲得獎學金！</span>
+    </div>
+
+    <script>
+        function showSurprise() {
+            // 顯示 GIF 動圖
+            const photo = document.getElementById('photo');
+            photo.style.display = 'block';
+
+            // 隱藏按鈕
+            const button = document.querySelector('button');
+            button.style.display = 'none';
+
+            // 啟動彩帶動畫
+            launchConfetti();
+        }
+
+        function launchConfetti() {
+            const confettiCanvas = document.getElementById('confettiCanvas');
+            const confetti = confettiCanvas.getContext('2d');
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#FFC700', '#FF5733', '#C70039', '#900C3F', '#DAF7A6'];
+
+            function createParticle() {
+                const x = Math.random() * confettiCanvas.width;
+                const y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+                const size = Math.random() * 10 + 5;
+                const speed = Math.random() * 3 + 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                return { x, y, size, speed, color };
+            }
+
+            function drawParticles() {
+                confetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                particles.forEach((particle, index) => {
+                    particle.y += particle.speed;
+                    confetti.beginPath();
+                    confetti.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    confetti.fillStyle = particle.color;
+                    confetti.fill();
+                    confetti.closePath();
+
+                    if (particle.y > confettiCanvas.height) {
+                        particles.splice(index, 1);
+                    }
+                });
+            }
+
+            function addParticles() {
+                if (particles.length < 300) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function animate() {
+                drawParticles();
+                addParticles();
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+    </script>
+</body>
+</html>
